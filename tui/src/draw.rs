@@ -39,8 +39,8 @@ pub fn log<T: LogEntry>(origin: (usize, usize), entries: &Vec<T>) {
         let lines = entry.to_lines();
         for (j, line) in lines.iter().enumerate() {
             print!("[{};{}H[1m[38;2;{};{};{};48;2;{};{};{}m{}[0m",
-                origin.0 + written_lines + j,
-                origin.1,
+                row + written_lines + j,
+                col,
                 0x54, 0x27, 0x8f, 0xcb, 0xc9, 0xe2,
                 line);
         }

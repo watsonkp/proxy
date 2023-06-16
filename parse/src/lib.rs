@@ -41,7 +41,7 @@ impl draw::LogEntry for Request {
         let body: Vec<String> = match text {
             Ok(s) => s.split("\r\n").map(|s| String::from(s)).collect(),
             // TODO: Do this without calling collect twice.
-            Err(e) => (self.data.iter().map(|v| format!("{:02X} ", v))
+            Err(_) => (self.data.iter().map(|v| format!("{:02X} ", v))
                         .collect::<Vec<_>>())
                         .chunks(16)
                         .map(|v| { v.join(" ") })
