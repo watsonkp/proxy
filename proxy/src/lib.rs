@@ -17,16 +17,14 @@ pub fn start(address: &'static str, sender: mpsc::Sender<parse::Request>) -> thr
                         Ok(n) => n.as_millis(),
                         Err(_) => 0,
                     };
-                    // TODO: When does reading stop?
                     // An HTTP request will keep the connection open while waiting for a response.
-                    // Detect the various end patterns "\r\n\r\n" etc.
                     let mut buf_reader = BufReader::new(&stream);
                     let mut body = Vec::new();
                     let mut buf = [0u8; 1024];
                     loop {
                         match buf_reader.read(&mut buf) {
                             Ok(n) => {
-                                body.extend(&buf);
+                                body.extend_from_slice(&buf[..n]);
                                 if n <= 1024 {
                                     break;
                                 }
