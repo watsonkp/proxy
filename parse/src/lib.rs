@@ -28,7 +28,6 @@ impl Request {
 
 impl fmt::Display for Request {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        //write!(f, "{}", self.data.len());
         let hex = self.data.iter()
             .map(|v| format!("{:02X} ", v))
             .take(32)
@@ -38,13 +37,6 @@ impl fmt::Display for Request {
         } else {
             write!(f, "{} bytes <null>", self.data.len())
         }
-        //match write!(f, "{}", self.data.iter().map(|v| format!("{:02X} ", v))
-        //    .take(32)
-        //    .reduce(|mut accum, item| { accum.push_str(&item); accum }) {
-        //    Some(_) => Ok(),
-        //    None => Ok(),
-        //};
-        //Ok(())
     }
 }
 

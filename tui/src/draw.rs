@@ -13,13 +13,7 @@ pub fn line_numbers(origin: (usize, usize), rows: usize) {
 }
 
 pub fn fill(origin: (usize, usize), rows: usize, cols: usize, background: Option<Colour>) {
-//pub fn fill(origin: (usize, usize), rows: usize, cols: usize, background: (u32, u32, u32)) {
-    //let row = format!("[48;2;{};{};{}m{}[0m", background.0, background.1, background.2, " ".repeat(cols));
-    //Some(background)
-    //let (red, green, blue) = background;
-    //let background = Colour::TrueColour{ red, green, blue };
     let style = Style::new(None, background);
-    //let row = format!("[{}{}[0m", style.get_style(), " ".repeat(cols));
     let row = style.style_string(&" ".repeat(cols));
     
     for i in 0..rows {

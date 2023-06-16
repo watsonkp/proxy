@@ -46,14 +46,6 @@ impl<T: Display, F: Fn(usize, usize, &Vec<T>)> UI<T, F> {
         (size.ws_row as usize, size.ws_col as usize)
     }
 
-//    fn resize(&mut self) {
-//        let (rows, cols) = Self::terminal_size();
-//
-//        self.rows = rows;
-//        self.cols = cols;
-//        self.render();
-//    }
-
     pub fn add_data(&mut self, datum: T) {
         self.model.push(datum);
         self.render();
