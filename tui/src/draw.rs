@@ -2,6 +2,7 @@ use core::fmt::{Display};
 
 pub trait LogEntry {
     fn timestamp(&self) -> String;
+    fn to_lines(&self) -> Vec<String>;
 }
 
 pub fn line_numbers(origin: (usize, usize), rows: usize) {
@@ -36,11 +37,21 @@ pub fn list<T: Display>(origin: (usize, usize), data: &Vec<T>) {
     }
 }
 
-pub fn log<T: Display + LogEntry>(origin: (usize, usize), data: &Vec<T>) {
+pub fn log<T: LogEntry>(origin: (usize, usize), entries: &Vec<T>) {
     let (row, col) = origin;
-    let timestamps: Vec<String> = data.iter().map(|v| v.timestamp()).collect();
-    list((row, col), &timestamps);
-    list((row, col + 25), data);
+
+    let mut written_lines = 0;
+    for entry in entries {
+        let lines = entry.to_lines();
+        for (j, line) in lines.iter().enumerate() {
+            print!("[{};{}H[1m[38;2;{};{};{};48;2;{};{};{}m{}[0m",
+                origin.0 + written_lines + j,
+                origin.1,
+                0x54, 0x27, 0x8f, 0xcb, 0xc9, 0xe2,
+                line);
+        }
+        written_lines += lines.len();
+    }
 }
 
 pub fn status_line(rows: usize, cols: usize) {

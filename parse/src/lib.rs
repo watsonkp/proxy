@@ -9,9 +9,19 @@ pub struct Request {
 
 impl Request {
     pub fn new(timestamp: u128, data: Vec<u8>) -> Self {
+        // TODO: Conditional parsing of different protocols.
+        // TODO: Fix requests being 1024 bytes with many trailing zeros.
+        let http_end = vec![0xd, 0xa, 0xd, 0xa];
+        let i = (0..(data.len() - http_end.len()))
+            .filter(|&i| { data[i..(i + http_end.len())] == http_end })
+            .next();
+        let length = match i {
+            None => data.len(),
+            Some(end) => end + http_end.len(),
+        };
         Request {
             timestamp: timestamp,
-            data: data,
+            data: data[..length].to_vec(),
         }
     }
 }
@@ -41,5 +51,20 @@ impl fmt::Display for Request {
 impl draw::LogEntry for Request {
     fn timestamp(&self) -> String {
         format!("{}", self.timestamp)
+    }
+
+    fn to_lines(&self) -> Vec<String> {
+        let hex: Vec<String> = self.data.iter()
+            .map(|v| format!("{:02X} ", v)).collect();
+
+        let timestamp = self.timestamp();
+        let spacer = " ".repeat(timestamp.len());
+
+        let body = hex.chunks(16).map(|v| { v.join(" ") });
+        let timestamp_column = (0..body.len()).map(|i| { if i == 0 { timestamp.clone() } else { spacer.clone() } });
+
+        let lines: Vec<String> = timestamp_column.zip(body).map(|(col1, col2)| { col1.to_owned() + " | " + &col2 }).collect();
+
+        return lines;
     }
 }
