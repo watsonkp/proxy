@@ -23,7 +23,8 @@ impl<T: Display, F: Fn(usize, usize, &Vec<T>)> UI<T, F> {
             c_oflag: 0,
             c_cflag: 0,
             c_lflag: 0,
-            c_cc: [0; 20],
+            c_line: 0,
+            c_cc: [0; 0x20],
             c_ispeed: 0,
             c_ospeed: 0,
         };
