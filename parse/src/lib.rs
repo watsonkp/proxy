@@ -9,19 +9,9 @@ pub struct Request {
 
 impl Request {
     pub fn new(timestamp: u128, data: Vec<u8>) -> Self {
-        // TODO: Conditional parsing of different protocols.
-        // TODO: Fix requests being 1024 bytes with many trailing zeros.
-        let http_end = vec![0xd, 0xa, 0xd, 0xa];
-        let i = (0..(data.len() - http_end.len()))
-            .filter(|&i| { data[i..(i + http_end.len())] == http_end })
-            .next();
-        let length = match i {
-            None => data.len(),
-            Some(end) => end + http_end.len(),
-        };
         Request {
             timestamp: timestamp,
-            data: data[..length].to_vec(),
+            data: data,
         }
     }
 }
@@ -46,16 +36,26 @@ impl draw::LogEntry for Request {
     }
 
     fn to_lines(&self) -> Vec<String> {
-        let hex: Vec<String> = self.data.iter()
-            .map(|v| format!("{:02X} ", v)).collect();
+        let text = std::str::from_utf8(&(self.data));
+
+        let body: Vec<String> = match text {
+            Ok(s) => s.split("\r\n").map(|s| String::from(s)).collect(),
+            // TODO: Do this without calling collect twice.
+            Err(e) => (self.data.iter().map(|v| format!("{:02X} ", v))
+                        .collect::<Vec<_>>())
+                        .chunks(16)
+                        .map(|v| { v.join(" ") })
+                        .collect(),
+        };
 
         let timestamp = self.timestamp();
         let spacer = " ".repeat(timestamp.len());
 
-        let body = hex.chunks(16).map(|v| { v.join(" ") });
         let timestamp_column = (0..body.len()).map(|i| { if i == 0 { timestamp.clone() } else { spacer.clone() } });
 
-        let lines: Vec<String> = timestamp_column.zip(body).map(|(col1, col2)| { col1.to_owned() + " | " + &col2 }).collect();
+        let lines: Vec<String> = timestamp_column.zip(body)
+                                    .map(|(col1, col2)| { col1.to_owned() + " | " + &col2 })
+                                    .collect();
 
         return lines;
     }
