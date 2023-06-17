@@ -1,8 +1,9 @@
 use core::fmt::{Display};
+use crate::Encoding;
 
 pub trait LogEntry {
     fn timestamp(&self) -> String;
-    fn to_lines(&self) -> Vec<String>;
+    fn to_lines(&self, encoding: &Encoding) -> Vec<String>;
 }
 
 pub fn line_numbers(origin: (usize, usize), rows: usize) {
@@ -31,12 +32,12 @@ pub fn list<T: Display>(origin: (usize, usize), data: &Vec<T>) {
     }
 }
 
-pub fn log<T: LogEntry>(origin: (usize, usize), entries: &Vec<T>) {
+pub fn log<T: LogEntry>(origin: (usize, usize), entries: &Vec<T>, encoding: &Encoding) {
     let (row, col) = origin;
 
     let mut written_lines = 0;
     for entry in entries {
-        let lines = entry.to_lines();
+        let lines = entry.to_lines(encoding);
         for (j, line) in lines.iter().enumerate() {
             print!("[{};{}H[1m[38;2;{};{};{};48;2;{};{};{}m{}[0m",
                 row + written_lines + j,

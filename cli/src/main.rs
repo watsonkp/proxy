@@ -4,6 +4,7 @@ use std::io::Read;
 use std::sync::mpsc;
 
 use tui::UI;
+use tui::Encoding;
 use tui::draw;
 use tui::draw::Colour::TrueColour;
 use parse;
@@ -16,7 +17,7 @@ fn read_commands(sender: mpsc::Sender<String>) -> thread::JoinHandle<()> {
             match io::stdin().read(&mut buf) {
                 Ok(_) => {
                     if let Ok(command) = String::from_utf8(Vec::from(buf)) {
-                        if command == "q" {
+                        if command.len() > 0 {
                             match sender.send(command) {
                                 Ok(_) => {},
                                 Err(_) => {},
@@ -31,9 +32,9 @@ fn read_commands(sender: mpsc::Sender<String>) -> thread::JoinHandle<()> {
 }
 
 fn main() {
-    let render = |rows, cols, model: &Vec<parse::Request>| {
+    let render = |rows, cols, model: &Vec<parse::Request>, encoding: &Encoding| {
         draw::fill((1,1), rows, cols, Some(TrueColour { red: 0xcb, green: 0xc9, blue: 0xe2 }));
-        draw::log((1,1), model);
+        draw::log((1,1), model, encoding);
         draw::status_line(rows, cols);
     };
 
@@ -53,7 +54,12 @@ fn main() {
         };
 
         match key_rx.try_recv() {
-            Ok(key) => if key == "q" { break; },
+            Ok(key) => match key.as_str() {
+                "q" => break,
+                "t" => ui.set_encoding(Encoding::Text),
+                "x" => ui.set_encoding(Encoding::Hex),
+                _ => continue,
+            },
             Err(_) => {},
         };
     }

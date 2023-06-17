@@ -1,6 +1,7 @@
 use std::fmt;
 
 use tui::draw;
+use tui::Encoding;
 
 pub struct Request {
     timestamp: u128,
@@ -35,17 +36,22 @@ impl draw::LogEntry for Request {
         format!("{}", self.timestamp)
     }
 
-    fn to_lines(&self) -> Vec<String> {
-        let text = std::str::from_utf8(&(self.data));
-
-        let body: Vec<String> = match text {
-            Ok(s) => s.split("\r\n").map(|s| String::from(s)).collect(),
-            // TODO: Do this without calling collect twice.
-            Err(_) => (self.data.iter().map(|v| format!("{:02X} ", v))
-                        .collect::<Vec<_>>())
-                        .chunks(16)
-                        .map(|v| { v.join(" ") })
-                        .collect(),
+    fn to_lines(&self, encoding: &Encoding) -> Vec<String> {
+        let body: Vec<String> = match encoding {
+            Encoding::Text => match std::str::from_utf8(&(self.data)) {
+                        Ok(s) => s.split("\r\n").map(|s| String::from(s)).collect(),
+                        // TODO: Do this without calling collect twice.
+                        Err(_) => (self.data.iter().map(|v| format!("{:02X} ", v))
+                                    .collect::<Vec<_>>())
+                                    .chunks(16)
+                                    .map(|v| { v.join(" ") })
+                                    .collect(),
+                    },
+            _ => (self.data.iter().map(|v| format!("{:02X} ", v))
+                    .collect::<Vec<_>>())
+                    .chunks(16)
+                    .map(|v| { v.join(" ") })
+                    .collect(),
         };
 
         let timestamp = self.timestamp();

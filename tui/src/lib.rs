@@ -6,15 +6,21 @@ use libc;
 
 pub mod draw;
 
-pub struct UI<T: Display, F: Fn(usize, usize, &Vec<T>)> {
+pub enum Encoding {
+    Hex,
+    Text,
+}
+
+pub struct UI<T: Display, F: Fn(usize, usize, &Vec<T>, &Encoding)> {
     initial_config: libc::termios,
     rows: usize,
     cols: usize,
     model: Vec<T>,
     render: F,
+    encoding: Encoding,
 }
 
-impl<T: Display, F: Fn(usize, usize, &Vec<T>)> UI<T, F> {
+impl<T: Display, F: Fn(usize, usize, &Vec<T>, &Encoding)> UI<T, F> {
     pub fn new(model: Vec<T>, render: F) -> Self {
         let (rows, cols) = Self::terminal_size();
 
@@ -36,6 +42,7 @@ impl<T: Display, F: Fn(usize, usize, &Vec<T>)> UI<T, F> {
             cols: cols,
             model: model,
             render: render,
+            encoding: Encoding::Hex,
         }
     }
 
@@ -77,8 +84,14 @@ impl<T: Display, F: Fn(usize, usize, &Vec<T>)> UI<T, F> {
         unsafe { libc::tcsetattr(1, libc::TCSANOW, &self.initial_config) };
     }
 
+    // Decode the data as the specified type
+    pub fn set_encoding(&mut self, encoding: Encoding) {
+        self.encoding = encoding;
+        self.render();
+    }
+
     fn render(&self) {
-        (self.render)(self.rows, self.cols, &self.model);
+        (self.render)(self.rows, self.cols, &self.model, &self.encoding);
 
         io::stdout().flush().unwrap();
     }
