@@ -10,20 +10,16 @@ use tui::draw::Colour::TrueColour;
 use parse;
 use proxy;
 
-fn read_commands(sender: mpsc::Sender<String>) -> thread::JoinHandle<()> {
+fn read_commands(sender: mpsc::Sender<char>) -> thread::JoinHandle<()> {
     thread::spawn(move || {
         let mut buf = [0u8; 1];
         loop {
             match io::stdin().read(&mut buf) {
                 Ok(_) => {
-                    if let Ok(command) = String::from_utf8(Vec::from(buf)) {
-                        if command.len() > 0 {
-                            match sender.send(command) {
-                                Ok(_) => {},
-                                Err(_) => {},
-                            };
-                        }
-                    }
+                    match sender.send(char::from(buf[0])) {
+                        Ok(_) => {},
+                        Err(_) => {},
+                    };
                 },
                 Err(_) => { },
             };
@@ -47,21 +43,28 @@ fn main() {
     let (key_tx, key_rx) = mpsc::channel();
     read_commands(key_tx);
 
+    let mut with_option = false;
+    let mut option = String::from("");
     loop {
         match proxy_rx.try_recv() {
             Ok(received) => ui.add_data(received),
             Err(_) => {},
         };
 
-        match key_rx.try_recv() {
-            Ok(key) => match key.as_str() {
-                "q" => break,
-                "t" => ui.set_encoding(Encoding::Text),
-                "x" => ui.set_encoding(Encoding::Hex),
-                _ => continue,
-            },
-            Err(_) => {},
-        };
+        if let Ok(key) = key_rx.try_recv() {
+            if key != '\n' && with_option {
+                option.push(key);
+            } else {
+                match key {
+                    'q' => break,
+                    't' => ui.set_encoding(Encoding::Text),
+                    'x' => ui.set_encoding(Encoding::Hex),
+                    'p' => with_option = true,
+                    '\n' => { ui.set_encoding(Encoding::Protocol(option)); with_option = false; option = String::from(""); },
+                    _ => continue,
+                };
+            }
+        }
     }
 
     ui.stop();

@@ -9,6 +9,7 @@ pub mod draw;
 pub enum Encoding {
     Hex,
     Text,
+    Protocol(String),
 }
 
 pub struct UI<T: Display, F: Fn(usize, usize, &Vec<T>, &Encoding)> {
