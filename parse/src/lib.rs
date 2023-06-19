@@ -4,6 +4,7 @@ use tui::draw;
 use tui::Encoding;
 
 // RFC 9112 - HTTP/1.1
+#[derive(Debug,PartialEq)]
 struct HTTPRequest {
     method: String,
     target: String,
@@ -38,7 +39,10 @@ impl HTTPRequest {
             }
 
             // Read message body
-            let body = lines.flat_map(|line| line.to_vec()).collect();
+            let body = lines.flat_map(|line| line.to_vec())
+                            .collect::<Vec<u8>>()
+                            .strip_suffix(&[b'\r', b'\r'])?
+                            .to_vec();
 
             return Some(HTTPRequest {
                 method: String::from(method),
@@ -154,5 +158,24 @@ impl Request {
                 vec![String::from("ERROR: Unknown protocol ") + protocol]
             },
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::HTTPRequest;
+
+    #[test]
+    fn http_request() {
+        let request = "POST / HTTP/1.1\r\nUser-Agent: curl\r\n\r\nAAAA=BBBB\r\n\r\n";
+        let parsed = HTTPRequest::new(request.as_bytes()).unwrap();
+        let expected = HTTPRequest {
+            method: String::from("POST"),
+            target: String::from("/"),
+            version: String::from("HTTP/1.1"),
+            headers: vec![(String::from("User-Agent"), String::from("curl"))],
+            body: "AAAA=BBBB".as_bytes().to_vec(),
+        };
+        assert_eq!(parsed, expected)
     }
 }
