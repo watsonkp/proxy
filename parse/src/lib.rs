@@ -26,7 +26,7 @@ impl HTTPRequest {
             // Read field lines
             let mut headers: Vec<(String, String)> = Vec::new();
             while let Some(header) = lines.next() {
-                if header == [b'\r'] {
+                if header == [b'\r'] || header.len() == 0 {
                     break;
                 }
                 let mut header = header.splitn(2, |&b| b == b':');
@@ -40,9 +40,7 @@ impl HTTPRequest {
 
             // Read message body
             let body = lines.flat_map(|line| line.to_vec())
-                            .collect::<Vec<u8>>()
-                            .strip_suffix(&[b'\r', b'\r'])?
-                            .to_vec();
+                            .collect::<Vec<u8>>();
 
             return Some(HTTPRequest {
                 method: String::from(method),
@@ -166,8 +164,22 @@ mod tests {
     use crate::HTTPRequest;
 
     #[test]
-    fn http_request() {
-        let request = "POST / HTTP/1.1\r\nUser-Agent: curl\r\n\r\nAAAA=BBBB\r\n\r\n";
+    fn http_get_request() {
+        let request = "GET /AAAA HTTP/1.1\r\nUser-Agent: curl\r\n\r\n";
+        let parsed = HTTPRequest::new(request.as_bytes()).unwrap();
+        let expected = HTTPRequest {
+            method: String::from("GET"),
+            target: String::from("/AAAA"),
+            version: String::from("HTTP/1.1"),
+            headers: vec![(String::from("User-Agent"), String::from("curl"))],
+            body: Vec::new(),
+        };
+        assert_eq!(parsed, expected)
+    }
+
+    #[test]
+    fn http_post_request() {
+        let request = "POST / HTTP/1.1\r\nUser-Agent: curl\r\n\r\nAAAA=BBBB";
         let parsed = HTTPRequest::new(request.as_bytes()).unwrap();
         let expected = HTTPRequest {
             method: String::from("POST"),
