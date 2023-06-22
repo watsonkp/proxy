@@ -1,10 +1,12 @@
 mod http_request;
+mod tls_request;
 
 use std::fmt;
 
 use tui::draw;
 use tui::Encoding;
 use crate::http_request::HTTPRequest;
+use crate::tls_request::Record;
 
 pub struct Request {
     timestamp: u128,
@@ -79,6 +81,17 @@ impl Request {
                 if let Some(http) = HTTPRequest::new(&self.data[..]) {
                     let mut lines: Vec<String> = Vec::new();
                     for (key, val) in http.properties().iter() {
+                        lines.push(format!("{}: {}", key.to_owned(), val));
+                    }
+                    return lines;
+                } else {
+                    return vec![String::from("ERROR: Parsing failed.")];
+                }
+            },
+            "tls" => {
+                if let Some(tls) = Record::new(&self.data[..]) {
+                    let mut lines: Vec<String> = Vec::new();
+                    for (key, val) in tls.properties().iter() {
                         lines.push(format!("{}: {}", key.to_owned(), val));
                     }
                     return lines;
