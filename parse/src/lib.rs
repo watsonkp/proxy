@@ -1,5 +1,6 @@
 mod http_request;
 mod tls_request;
+mod tls_cipher_suite;
 
 use std::fmt;
 
