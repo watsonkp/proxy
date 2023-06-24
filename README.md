@@ -12,7 +12,9 @@ Version numbers signify progress. Version 1.0 will be a limited but functional p
 ### Near Term Development Tasks
 * [ ] Initial TUI implementation.
 * [ ] Parse incoming TLS requests.
-* [ ] Parse incoming HTTP/1 requests.
+	* [x] Parse Client Hello
+	* [ ] Parse Server Hello
+* [x] Parse incoming HTTP/1 requests.
 * [ ] Parse incoming HTTP/2 requests.
 * [ ] Parse incoming HTTP/3 requests.
 * [ ] Proxy captured requests.
