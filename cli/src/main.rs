@@ -1,3 +1,4 @@
+#![doc = include_str!("../../README.md")]
 use std::io;
 use std::thread;
 use std::io::Read;
