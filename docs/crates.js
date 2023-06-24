@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["cli","libc","parse","proxy","tui"];
+window.ALL_CRATES = ["cli","parse","proxy","tui"];
