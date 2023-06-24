@@ -1,7 +1,7 @@
 mod tests {
     use parse::tls_request::{Record, RecordContentType, Handshake, HandshakeType, HandshakeMessage};
     use parse::tls_cipher_suite::CipherSuite;
-    use parse::tls_extension::{Extension, ALPN};
+    use parse::tls_extension::{Extension, ALPN, SignatureScheme};
 
     #[test]
     fn tls_hello() {
@@ -190,7 +190,30 @@ mod tests {
                                     Extension::EncryptThenMAC,
                                     Extension::ExtendedMasterSecret,
                                     Extension::PostHandshakeAuth,
-                                    Extension::SignatureAlgorithms,
+                                    Extension::SignatureAlgorithms(vec![
+                                        SignatureScheme::ECDSASECP256R1SHA256,
+                                        SignatureScheme::ECDSASECP384R1SHA384,
+                                        SignatureScheme::ECDSASECP521R1SHA512,
+                                        SignatureScheme::ED25519,
+                                        SignatureScheme::ED448,
+                                        SignatureScheme::RSAPSSPSSSHA256,
+                                        SignatureScheme::RSAPSSPSSSHA384,
+                                        SignatureScheme::RSAPSSPSSSHA512,
+                                        SignatureScheme::RSAPSSRSAESHA256,
+                                        SignatureScheme::RSAPSSRSAESHA384,
+                                        SignatureScheme::RSAPSSRSAESHA512,
+                                        SignatureScheme::RSAPKCS1SHA256,
+                                        SignatureScheme::RSAPKCS1SHA384,
+                                        SignatureScheme::RSAPKCS1SHA512,
+                                        SignatureScheme::SHA224ECDSA,
+                                        SignatureScheme::ECDSASHA1,
+                                        SignatureScheme::SHA224RSA,
+                                        SignatureScheme::RSAPKCS1SHA1,
+                                        SignatureScheme::SHA224DSA,
+                                        SignatureScheme::SHA1DSA,
+                                        SignatureScheme::SHA256DSA,
+                                        SignatureScheme::SHA384DSA
+                                    ]),
                                     Extension::SupportedVersions,
                                     Extension::PSKKeyExchangeModes,
                                     Extension::KeyShare,
