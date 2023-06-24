@@ -3,7 +3,7 @@ pub enum Extension {
     ServerName,
     MaxFragmentLength,
     StatusRequest,
-    SupportedGroups,
+    SupportedGroups(Vec<NamedGroup>),
     ECPointFormats,
     SignatureAlgorithms(Vec<SignatureScheme>),
     UseSRTP,
@@ -45,7 +45,7 @@ impl Extension {
                     0 => Ok(Extension::ServerName),
                     1 => Ok(Extension::MaxFragmentLength),
                     5 => Ok(Extension::StatusRequest),
-                    10 => Ok(Extension::SupportedGroups),
+                    10 => Ok(Extension::SupportedGroups(Self::parse_named_groups(extension_data))),
                     // RFC 4492 ECC Cipher Suites
                     11 => Ok(Extension::ECPointFormats),
                     13 => Ok(Extension::SignatureAlgorithms(Self::parse_signature_schemes(extension_data))),
@@ -90,6 +90,20 @@ impl Extension {
             supported_signature_algorithms.push(SignatureScheme::new(id));
         }
         return supported_signature_algorithms;
+    }
+
+    fn parse_named_groups(data: Vec<u8>) -> Vec<NamedGroup> {
+        let mut i = 0;
+        let mut named_group_list: Vec<NamedGroup> = Vec::new();
+        let data_length: u16 = u16::from_be_bytes([data[0], data[1]]);
+        i = i + 2;
+        let data_length = usize::from(data_length);
+        while i < data_length {
+            let id: u16 = u16::from_be_bytes([data[i], data[i + 1]]);
+            i = i + 2;
+            named_group_list.push(NamedGroup::new(id));
+        }
+        return named_group_list;
     }
 }
 
@@ -187,6 +201,45 @@ impl SignatureScheme {
             0x0203 => SignatureScheme::ECDSASHA1,
             0xFE00..=0xFFFF => SignatureScheme::PrivateUse,
             _ => SignatureScheme::Missing(n),
+        }
+    }
+}
+
+#[derive(Debug,PartialEq)]
+pub enum NamedGroup {
+    // RFC 8446 TLS 1.3
+    SECP256R1,
+    SECP384R1,
+    SECP521R1,
+    X25519,
+    X448,
+    FFDHE2048,
+    FFDHE3072,
+    FFDHE4096,
+    FFDHE6144,
+    FFDHE8192,
+    FFDHEPrivateUse,
+    ECDHEPrivateUse,
+    Missing(u16),
+}
+
+impl NamedGroup {
+    fn new(n: u16) -> Self {
+        match n {
+            // RFC 8446 TLS 1.3
+            0x0017 => NamedGroup::SECP256R1,
+            0x0018 => NamedGroup::SECP384R1,
+            0x0019 => NamedGroup::SECP521R1,
+            0x001D => NamedGroup::X25519,
+            0x001E => NamedGroup::X448,
+            0x0100 => NamedGroup::FFDHE2048,
+            0x0101 => NamedGroup::FFDHE3072,
+            0x0102 => NamedGroup::FFDHE4096,
+            0x0103 => NamedGroup::FFDHE6144,
+            0x0104 => NamedGroup::FFDHE8192,
+            0x01FC..=0x01FF => NamedGroup::FFDHEPrivateUse,
+            0xFE00..=0xFEFF => NamedGroup::ECDHEPrivateUse,
+            _ => NamedGroup::Missing(n),
         }
     }
 }

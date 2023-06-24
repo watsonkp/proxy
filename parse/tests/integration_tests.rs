@@ -1,7 +1,7 @@
 mod tests {
     use parse::tls_request::{Record, RecordContentType, Handshake, HandshakeType, HandshakeMessage};
     use parse::tls_cipher_suite::CipherSuite;
-    use parse::tls_extension::{Extension, ALPN, SignatureScheme};
+    use parse::tls_extension::{Extension, ALPN, SignatureScheme, NamedGroup};
 
     #[test]
     fn tls_hello() {
@@ -185,7 +185,17 @@ mod tests {
                     ],
                     legacy_compression_methods: vec![0x00],
                     extensions: vec![Extension::ECPointFormats,
-                                    Extension::SupportedGroups,
+                                    Extension::SupportedGroups(vec![
+                                        NamedGroup::X25519,
+                                        NamedGroup::SECP256R1,
+                                        NamedGroup::X448,
+                                        NamedGroup::SECP521R1,
+                                        NamedGroup::SECP384R1,
+                                        NamedGroup::FFDHE2048,
+                                        NamedGroup::FFDHE3072,
+                                        NamedGroup::FFDHE4096,
+                                        NamedGroup::FFDHE6144,
+                                    ]),
                                     Extension::ApplicationLayerProtocolNegotiation(ALPN { protocol_name_list: vec!["h2".to_string(), "http/1.1".to_string()] }),
                                     Extension::EncryptThenMAC,
                                     Extension::ExtendedMasterSecret,
