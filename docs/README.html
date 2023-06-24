@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Proxy</title>
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+    <h1 class="title">Proxy</h1>
+    <nav id="TOC"><ul>
+<li><a href="#progress">0.1 Progress</a><ul>
+<li><a href="#near-term-development-tasks">0.1.1 Near Term Development Tasks</a><ul></ul></li></ul></li></ul></nav><p>A proxy capable of parsing, intercepting, editing, and sending traffic from an ever expanding list of protocols including HTTP and TLS. This tool can be used through a text-based user interface (TUI) or programmatically through a Rust API.</p>
+<p>This project is motivated by a desire to dig into the messy world of implementing network protocols, valuing clear and usable tools that don’t obfuscate data or functionality, and gaining experience with Rust.</p>
+<p>Read the <code>rustdoc</code> generated documentation on <a href="https://watsonkp.github.io/proxy/README.html">Github Pages</a>.</p>
+<ul>
+<li><a href="https://watsonkp.github.io/proxy/cli/index.html">cli crate</a></li>
+<li><a href="https://watsonkp.github.io/proxy/parse/index.html">parse crate</a></li>
+<li><a href="https://watsonkp.github.io/proxy/proxy/index.html">proxy crate</a></li>
+<li><a href="https://watsonkp.github.io/proxy/tui/index.html">tui crate</a></li>
+</ul>
+<h2 id="progress"><a href="#progress">0.1 Progress</a></h2>
+<p>The project description may sound nice, but it doesn’t describe the current rudimentary project state. There is a lot of work to be done, but that’s the point.</p>
+<p>Version numbers signify progress. Version 1.0 will be a limited but functional proof of concept fulfilling the project description.</p>
+<h3 id="near-term-development-tasks"><a href="#near-term-development-tasks">0.1.1 Near Term Development Tasks</a></h3>
+<ul>
+<li><input disabled="" type="checkbox"/>
+Initial TUI implementation.</li>
+<li><input disabled="" type="checkbox"/>
+Parse incoming TLS requests.
+<ul>
+<li><input disabled="" type="checkbox" checked=""/>
+Parse Client Hello</li>
+<li><input disabled="" type="checkbox"/>
+Parse Server Hello</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Parse incoming HTTP/1 requests.</li>
+<li><input disabled="" type="checkbox"/>
+Parse incoming HTTP/2 requests.</li>
+<li><input disabled="" type="checkbox"/>
+Parse incoming HTTP/3 requests.</li>
+<li><input disabled="" type="checkbox"/>
+Proxy captured requests.</li>
+<li><input disabled="" type="checkbox"/>
+Edit incoming requests.</li>
+<li><input disabled="" type="checkbox"/>
+Send edited requests.</li>
+</ul>
+
+    
+</body>
+</html>
