@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Colour"],"fn":["fill","line_numbers","list","log","status_line"],"trait":["LogEntry"]};

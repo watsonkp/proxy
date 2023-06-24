@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HandshakeType","RecordContentType"],"struct":["Handshake","HandshakeMessage","Record"]};
