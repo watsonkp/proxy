@@ -4,6 +4,12 @@ A proxy capable of parsing, intercepting, editing, and sending traffic from an e
 
 This project is motivated by a desire to dig into the messy world of implementing network protocols, valuing clear and usable tools that don't obfuscate data or functionality, and gaining experience with Rust.
 
+Read the `rustdoc` generated documentation on [Github Pages](https://watsonkp.github.io/proxy/README.html).
+* [cli crate](https://watsonkp.github.io/proxy/cli/index.html)
+* [parse crate](https://watsonkp.github.io/proxy/parse/index.html)
+* [proxy crate](https://watsonkp.github.io/proxy/proxy/index.html)
+* [tui crate](https://watsonkp.github.io/proxy/tui/index.html)
+
 ## Progress
 The project description may sound nice, but it doesn't describe the current rudimentary project state. There is a lot of work to be done, but that's the point.
 
